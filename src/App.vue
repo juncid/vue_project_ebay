@@ -132,6 +132,7 @@ export default {
       $('<span class="over">' + $(this).text() + "</span>").appendTo(this);
     });
 
+    // 导航栏交互
     $("#menu2 li a").hover(
       function() {
         $(".out", this)
