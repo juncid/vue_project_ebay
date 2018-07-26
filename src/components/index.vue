@@ -80,7 +80,7 @@
                         <li v-for="(itm, i) in item.datas" :key="itm.artID">
                             <a href="#/site/goodsinfo/87" class="">
                                 <div class="img-box">
-                                    <img :src="itm.img_url">
+                                    <img v-lazy="itm.img_url">
                                 </div>
                                 <div class="info">
                                     <h3>{{itm.artTitle}}</h3>

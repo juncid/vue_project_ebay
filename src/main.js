@@ -1,11 +1,21 @@
 import Vue from 'vue'
 import App from './App.vue'
+import path  from "path"
 // 引入路由模块
 import VueRouter from 'vue-router'
 // 引入ui模块
 import ElementUI from 'element-ui';
 // 引入CSS
 import 'element-ui/lib/theme-chalk/index.css';
+// 引入懒加载模块
+import VueLazyload from 'vue-lazyload'
+// 使用懒加载路由
+Vue.use(VueLazyload,{
+  preLoad: 1.3,
+  error: 'assets/img/01.gif',
+  loading:path.join(__dirname+'assets/img/01.gif',),
+  attempt: 1
+})
 
 // 引入路由
 import index from './components/index.vue'
