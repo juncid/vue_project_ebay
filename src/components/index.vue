@@ -10,6 +10,7 @@
         <div class="section">
             <div class="wrapper">
                 <div class="wrap-box">
+                    <!-- 左边 -->
                     <div class="left-220" style="margin: 0px;">
                         <div class="banner-nav">
                             <ul>
@@ -37,35 +38,15 @@
                             </ul>
                         </div>
                     </div>
-                    <!--幻灯片-->
+                    <!--轮播图-->
                     <div class="left-705">
-                        <div class="banner-img">
-                            <div id="focus-box" class="focus-box">
-                                <ul class="slides">
-                                    <li class="" style="width: 100%;height:100%; float: left; margin-right: -100%; position: relative; opacity: 0; display: block; z-index: 1;">
-                                        <a href="/goods.html">
-                                            <img style="width: 100%;height:100%;" src="http://39.108.135.214:8899/imgs/SJ4EgwosX0wTqvyAvhtFGT1w.jpg" draggable="false">
-                                        </a>
-                                    </li>
-                                    <li style="width: 100%;height:100%; float: left; margin-right: -100%; position: relative; opacity: 1; display: block; z-index: 2;" class="flex-active-slide">
-                                        <a href="/goods.html">
-                                            <img style="width: 100%;height:100%;" src="http://39.108.135.214:8899/upload/201504/20/thumb_201504200314272543.jpg" draggable="false">
-                                        </a>
-                                    </li>
-                                </ul>
-                                <ol class="flex-control-nav flex-control-paging">
-                                    <li>
-                                        <a class="">1</a>
-                                    </li>
-                                    <li>
-                                        <a class="flex-active">2</a>
-                                    </li>
-                                </ol>
-                            </div>
-
-                        </div>
+                        <el-carousel height="341px" :interval="5000" arrow="always">
+                            <el-carousel-item v-for="(item, index) in sliderlist" :key="item.id">
+                                <img :src="item.img_url" alt="">
+                            </el-carousel-item>
+                        </el-carousel>
                     </div>
-                    <!--/幻灯片-->
+                    <!-- 右边 -->
                     <div class="left-220">
                         <ul class="side-img-list">
                             <li v-for="(item, index) in toplist" :key="item.id">
@@ -509,6 +490,10 @@ export default {
 };
 </script>
 <style scoped>
+.left-705 img{
+    width: 100%;
+    height: 100%;
+}
 </style>
 
 
