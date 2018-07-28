@@ -78,7 +78,7 @@
                 <div class="wrap-box">
                     <ul class="img-list">
                         <li v-for="(itm, i) in item.datas" :key="itm.artID">
-                            <a href="#/site/goodsinfo/87" class="">
+                            <router-link :to="'/goodsInfo/'+itm.artID">
                                 <div class="img-box">
                                     <img v-lazy="itm.img_url">
                                 </div>
@@ -93,7 +93,7 @@
                                         </span>
                                     </p>
                                 </div>
-                            </a>
+                            </router-link>
                         </li>
                     </ul>
                 </div>
@@ -105,10 +105,8 @@
 
 <script>
 
-// 引入ajax模块
-import axios from 'axios';
-// 引入moment模块
-import moment from 'moment';
+
+
 
 export default {
     data:function(){
@@ -119,17 +117,11 @@ export default {
             goodlist:[]
         }
     },
-    // 过滤器
-    filters:{
-        cutTime(value){
-            // 使用moment格式化日期
-            return moment(value).format('YYYY-MM-DD')
-        }
-    },
+
     // 生命周期函数(即将显示时调用)
     beforeMount() {
         // 调用接口
-        axios.get('http://47.106.148.205:8899/site/goods/gettopdata/goods')
+        this.axios.get('site/goods/gettopdata/goods')
         .then((response)=>{
             // console.log(response);
             this.catelist = response.data.message.catelist;
@@ -142,7 +134,7 @@ export default {
     },
     // 生命周期函数(显示时调用)
     mounted() {
-        axios.get('http://47.106.148.205:8899/site/goods/getgoodsgroup')
+        this.axios.get('site/goods/getgoodsgroup')
         .then((response)=>{
             // console.log(response);
             this.goodlist = response.data.message
