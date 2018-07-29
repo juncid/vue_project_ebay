@@ -254,7 +254,10 @@ export default {
     // 添加到购物车
     cartAdd() {
       // console.log(1);
-      this.$store.commit("increment", this.buyNum);
+      this.$store.commit("buyGood", {
+          goodId:this.$route.params.id,
+          goodNum:this.buyNum
+      });
     },
 
     // 页码改变
@@ -319,6 +322,7 @@ export default {
   // 观察属性，属性值改变时自动调用
   watch: {
     $route(to, from) {
+        this.buyNum = 1;
       // 对路由变化作出响应...比如点击推荐商品，需要跳转
       //   console.log("我改变了");
       // 调用函数

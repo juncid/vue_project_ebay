@@ -57,15 +57,43 @@ Vue.use(ElementUI);
 // 使用vuex
 Vue.use(Vuex)
 
+// 从本地取出数据
+let buyList = JSON.parse(window.localStorage.getItem('buyList'))
+
 // 实例化一个vuex的仓库
 const store = new Vuex.Store({
   state: {
-    count: 0
+    // 因为要添加到购物车的商品不止一种，所以需要修改vuex仓库结构
+    buyList
+  },
+  // 显示总数到购物车标签上
+  // 有一个类似于computed的属性
+  getters:{
+    totalCount(state){
+      let num = 0
+      // buyList是个对象 所有forin遍历
+      for (const key in state.buyList) {
+        // 累加总数
+        num+=parseInt(state.buyList[key])
+      }
+      return num;
+    }
   },
   // 变更数据，必须通过这个方式
   mutations: {
-    increment (state,n) {
-      state.count += n;
+    // info -> {goodId:xx,goodNum:xx}
+    buyGood (state,info) {
+      if(state.buyList[info.goodId]){
+        // 如果有商品
+        let oldNum = parseInt(state.buyList[info.goodId])
+        oldNum += parseInt(info.goodNum);
+        state.buyList[info.goodId] = oldNum;
+      }else{
+        // 没有就直接赋值
+        // 直接赋值的方式vue不会跟踪属性
+        // state.buyList[info.goodId] = info.goodNum
+        Vue.set(state.buyList,info.goodId,parseInt(info.goodNum));
+      }
     }
   }
 })
@@ -98,3 +126,8 @@ new Vue({
   // 挂载vuex仓库
   store
 }).$mount('#app')
+
+// 数据常驻  关闭或刷新浏览器保存数据在本地
+window.onbeforeunload = function(){
+  window.localStorage.setItem('buyList',JSON.stringify(store.state.buyList));
+}
