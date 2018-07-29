@@ -10,6 +10,10 @@ import iView from 'iview';
 import 'iview/dist/styles/iview.css';
 // 引入moment模块
 import moment from 'moment';
+// 引入vuex
+import Vuex from 'vuex'
+
+
 // 注册全局过滤器
 Vue.filter('cutTime', function (value) {
     return moment(value).format('YYYY-MM-DD')
@@ -28,6 +32,7 @@ axios.defaults.baseURL = 'http://47.106.148.205:8899'
 import 'element-ui/lib/theme-chalk/index.css';
 // 引入懒加载模块
 import VueLazyload from 'vue-lazyload'
+
 // 使用懒加载路由
 Vue.use(VueLazyload,{
   preLoad: 1.3,
@@ -35,6 +40,7 @@ Vue.use(VueLazyload,{
   loading:require('./assets/img/01.gif'),
   attempt: 1 
 })
+
 
 // 引入路由
 import index from './components/index.vue'
@@ -47,6 +53,22 @@ Vue.use(iView);
 
 // 使用ui中间件
 Vue.use(ElementUI);
+
+// 使用vuex
+Vue.use(Vuex)
+
+// 实例化一个vuex的仓库
+const store = new Vuex.Store({
+  state: {
+    count: 0
+  },
+  // 变更数据，必须通过这个方式
+  mutations: {
+    increment (state,n) {
+      state.count += n;
+    }
+  }
+})
 
 // 定义路由规则
 const router = new VueRouter({
@@ -71,5 +93,8 @@ Vue.config.productionTip = false
 
 new Vue({
   render: h => h(App),
-  router
+  // 挂载路由
+  router,
+  // 挂载vuex仓库
+  store
 }).$mount('#app')
