@@ -55,7 +55,7 @@
                                     <th width="54" align="center">操作</th>
                                 </tr>
                                 <!-- 空的时候显示 -->
-                                <tr>
+                                <tr v-if="message.length==0">
                                     <td colspan="10">
                                         <div class="msg-tips">
                                             <div class="icon warning">
@@ -70,9 +70,9 @@
                                     </td>
                                 </tr>
                                 <!-- 有数据的时候显示 -->
-                                <!-- <tr>
+                                <tr v-for="(item, index) in message" :key="item.id">
                                     <td width="48" align="center">
-                                        <el-switch  active-color="#409eff" inactive-color="#555555">
+                                        <el-switch v-model="item.isSelected" active-color="#409eff" inactive-color="#555555">
                                         </el-switch>
                                     </td>
                                     <td align="left" colspan="2">
@@ -82,21 +82,21 @@
                                     </td>
                                     <td width="84" align="left">{{item.sell_price}}</td>
                                     <td width="104" align="center">
-                                        <el-input-number v-model="item.buycount" size="mini" :min="1" :max="10" label="描述文字"></el-input-number>
+                                        <el-input-number @change="change($event,index)" v-model="item.buycount" size="mini" :min="1" :max="10" label="描述文字"></el-input-number>
                                     </td>
-                                    <td width="104" align="left"></td>
+                                    <td width="104" align="left">{{item.buycount*item.sell_price}}</td>
                                     <td width="54" align="center">
-                                        <a href="javascript:void(0)">删除</a>
+                                        <a @click="showModal=true;delIndex=index" href="javascript:void(0)">删除</a>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th align="right" colspan="8">
                                         已选择商品
-                                        <b class="red" id="totalQuantity">0</b> 件 &nbsp;&nbsp;&nbsp; 商品总金额（不含运费）：
+                                        <b class="red" id="totalQuantity">{{selectCount}}</b> 件 &nbsp;&nbsp;&nbsp; 商品总金额（不含运费）：
                                         <span class="red">￥</span>
-                                        <b class="red" id="totalAmount">0</b>元
+                                        <b class="red" id="totalAmount">{{totalPrice}}</b>元
                                     </th>
-                                </tr> -->
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -112,16 +112,124 @@
                 </div>
             </div>
         </div>
+        <Modal v-model="showModal" width="360">
+        <p slot="header" style="color:#f60;text-align:center">
+            <Icon type="ios-information-circle"></Icon>
+            <span>确认删除</span>
+        </p>
+        <div style="text-align:center">
+            <p>您真的要删除吗？</p>
+        </div>
+        <div slot="footer">
+            <Row>
+                <Col span="12">
+                <!-- 点击取消隐藏模态框 -->
+                    <Button @click="showModal=false" type="success" size="large" long >取消</Button>
+                </Col>
+                <Col span="12">
+                    <Button @click="del" type="error" size="large" long >确认</Button>
+                </Col>
+            </Row>
+        </div>
+    </Modal>
     </div>
 </template>
 
 <script>
 export default {
-    name:'buyCar'
-}
+  name: "buyCar",
+  data: function() {
+    return {
+      message: [],
+      // isSelected:true
+      // 警告模态框绑定
+      showModal: false,
+      delIndex:0,
+    };
+  },
+  created() {
+    // 获取数据 拼接为id1,id2,id3
+    // console.log(this.$store.state.buyList);
+    let buyList = this.$store.state.buyList;
+    let ids = "";
+    for (const key in buyList) {
+      ids += key;
+      ids += ",";
+    }
+    // 拼接多了一个, 所以去掉
+    ids = ids.slice(0, -1);
+    // 发送ajax请求
+    this.axios
+      .get(`site/comment/getshopcargoods/${ids}`)
+      .then(response => {
+        // console.log(response);
+        // 需要把商品详情页买的商品品类的数量传递过来
+        // 先初始化响应到的数据
+        response.data.message.forEach(v => {
+          // 需要传递的数量     对应商品的数量
+          v.buycount = buyList[v.id];
+          // 增加一个布尔属性来开启切换按钮
+          v.isSelected = true;
+        });
+        // 动态添加的属性isSelected  vue追踪不到，所以需要先初始化数据
+        // 先初始化数据再赋值，这样vue就能追踪到,
+        this.message = response.data.message;
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  },
+  methods: {
+    // 同步数据显示在购物车标签里（同步大vuex里）
+    change(value, index) {
+      // console.log('我改变了');
+      // console.log(value);
+      // console.log(index);
+      // 提交载荷
+      this.$store.commit("changeCount", {
+        // 取到修改的那个商品的id
+        goodId: this.message[index].id,
+        goodNum: value
+      });
+    },
+    del(){
+        // console.log(this.delIndex);
+        // 根据索引去获取id，如果先删除，那么对应的元素就已经没有了，获取到的id不是对应的那个了
+        // 删除vuex中的数据                 根据索引获取id
+        this.$store.commit('delGood',this.message[this.delIndex].id)
+        // 获取当前这条数据的index值，就能删除当前这个组件中的数据
+        this.message.splice(this.delIndex,1)
+        // 隐藏对话框
+        this.showModal = false
+    }
+  },
+  computed: {
+    // 选中的商品数量
+    selectCount() {
+      // 定义变量保存商品总数
+      let totalCount = 0;
+      this.message.forEach(v => {
+        if (v.isSelected) {
+          totalCount += v.buycount;
+        }
+      });
+      return totalCount;
+    },
+    // 总金额
+    totalPrice() {
+      // 是否选中
+      let totalPrice = 0;
+      this.message.forEach(v => {
+        if (v.isSelected) {
+          totalPrice += v.buycount * v.sell_price;
+        }
+      });
+      return totalPrice;
+    }
+  }
+};
 </script>
 
 <style scoped>
-
 </style>
 

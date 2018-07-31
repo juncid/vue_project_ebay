@@ -80,9 +80,10 @@ const store = new Vuex.Store({
       return num;
     }
   },
-  // 变更数据，必须通过这个方式
+  // 变更vuex的数据，必须通过mutations里面的方法
   mutations: {
     // info -> {goodId:xx,goodNum:xx}
+    // 
     buyGood (state,info) {
       if(state.buyList[info.goodId]){
         // 如果有商品
@@ -95,6 +96,15 @@ const store = new Vuex.Store({
         // state.buyList[info.goodId] = info.goodNum
         Vue.set(state.buyList,info.goodId,parseInt(info.goodNum));
       }
+    },
+    // 当购物车修改数量时，同步修改购物车标签中的数据
+    // info -> {goodId:xx,goodNum:xx}
+    changeCount(state,info){
+      state.buyList[info.goodId] = info.goodNum
+    },
+    // 删除某一条数据
+    delGood(state,id){
+      Vue.delete(state.buyList,id)
     }
   }
 })
