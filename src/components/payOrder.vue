@@ -243,7 +243,21 @@
 
 <script>
 export default {
-    name:'payOrder'
+    name:'payOrder',
+    // 创建出来
+    created() {
+        // 判断是否登录 site/account/islogin
+        this.axios.get('site/account/islogin')
+        .then(resposne=>{
+            console.log(resposne);
+            if (resposne.data.code=='nologin') {
+                this.$router.push('/login')
+            }
+        })
+        .catch(err=>{
+            console.log(err);
+        })
+    },
 };
 </script>
 

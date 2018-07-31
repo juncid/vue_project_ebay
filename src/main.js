@@ -47,6 +47,7 @@ import index from './components/index.vue'
 import goodInfo from './components/goodsInfo.vue'
 import buyCar from './components/buyCar.vue'
 import payOrder from './components/payOrder.vue'
+import login from './components/login.vue'
 
 // 使用路由中间件
 Vue.use(VueRouter)
@@ -130,6 +131,10 @@ const router = new VueRouter({
     {
       path:'/payOrder',
       component:payOrder
+    },
+    {
+      path:'/login',
+      component:login
     }
  ]
 })
