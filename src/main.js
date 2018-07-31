@@ -46,6 +46,7 @@ Vue.use(VueLazyload,{
 import index from './components/index.vue'
 import goodInfo from './components/goodsInfo.vue'
 import buyCar from './components/buyCar.vue'
+import payOrder from './components/payOrder.vue'
 
 // 使用路由中间件
 Vue.use(VueRouter)
@@ -125,6 +126,10 @@ const router = new VueRouter({
     {
       path:'/buyCar',
       component:buyCar
+    },
+    {
+      path:'/payOrder',
+      component:payOrder
     }
  ]
 })

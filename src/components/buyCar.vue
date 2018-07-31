@@ -105,33 +105,37 @@
                     <div class="cart-foot clearfix">
                         <div class="right-box">
                             <button class="button" onclick="javascript:location.href='/index.html';">继续购物</button>
-                            <button class="submit" onclick="formSubmit(this, '/', '/shopping.html');">立即结算</button>
+                            <router-link to="/payOrder">
+                                <button class="submit">立即结算</button>
+                            </router-link>
                         </div>
                     </div>
                     <!--购物车底部-->
                 </div>
             </div>
         </div>
+        <!-- 对话框 -->
         <Modal v-model="showModal" width="360">
-        <p slot="header" style="color:#f60;text-align:center">
-            <Icon type="ios-information-circle"></Icon>
-            <span>确认删除</span>
-        </p>
-        <div style="text-align:center">
-            <p>您真的要删除吗？</p>
-        </div>
-        <div slot="footer">
-            <Row>
-                <Col span="12">
-                <!-- 点击取消隐藏模态框 -->
-                    <Button @click="showModal=false" type="success" size="large" long >取消</Button>
-                </Col>
-                <Col span="12">
-                    <Button @click="del" type="error" size="large" long >确认</Button>
-                </Col>
-            </Row>
-        </div>
-    </Modal>
+            <p slot="header" style="color:#f60;text-align:center">
+                <Icon type="ios-information-circle"></Icon>
+                <span>确认删除</span>
+            </p>
+            <div style="text-align:center">
+                <p>您真的要删除吗？</p>
+            </div>
+            <div slot="footer">
+                <Row>
+                    <Col span="12">
+                    <!-- 点击取消隐藏模态框 -->
+                        <Button @click="showModal=false" type="success" size="large" long >取消</Button>
+                    </Col>
+                    <Col span="12">
+                        <Button @click="del" type="error" size="large" long >确认</Button>
+                    </Col>
+                </Row>
+            </div>
+        </Modal>
+
     </div>
 </template>
 
@@ -144,10 +148,12 @@ export default {
       // isSelected:true
       // 警告模态框绑定
       showModal: false,
-      delIndex:0,
+      delIndex: 0
     };
   },
   created() {
+    // 进来弹框显示
+    this.$Spin.show();
     // 获取数据 拼接为id1,id2,id3
     // console.log(this.$store.state.buyList);
     let buyList = this.$store.state.buyList;
@@ -156,6 +162,13 @@ export default {
       ids += key;
       ids += ",";
     }
+
+    // 判断是否有数据 这样的话购物车如果没数据就不会请求ajax，不会报错
+    if (ids == "") {
+        this.$Spin.hide() 
+        return;
+    }
+
     // 拼接多了一个, 所以去掉
     ids = ids.slice(0, -1);
     // 发送ajax请求
@@ -174,6 +187,7 @@ export default {
         // 动态添加的属性isSelected  vue追踪不到，所以需要先初始化数据
         // 先初始化数据再赋值，这样vue就能追踪到,
         this.message = response.data.message;
+        this.$Spin.hide()
       })
       .catch(error => {
         console.log(error);
@@ -192,15 +206,15 @@ export default {
         goodNum: value
       });
     },
-    del(){
-        // console.log(this.delIndex);
-        // 根据索引去获取id，如果先删除，那么对应的元素就已经没有了，获取到的id不是对应的那个了
-        // 删除vuex中的数据                 根据索引获取id
-        this.$store.commit('delGood',this.message[this.delIndex].id)
-        // 获取当前这条数据的index值，就能删除当前这个组件中的数据
-        this.message.splice(this.delIndex,1)
-        // 隐藏对话框
-        this.showModal = false
+    del() {
+      // console.log(this.delIndex);
+      // 根据索引去获取id，如果先删除，那么对应的元素就已经没有了，获取到的id不是对应的那个了
+      // 删除vuex中的数据                 根据索引获取id
+      this.$store.commit("delGood", this.message[this.delIndex].id);
+      // 获取当前这条数据的index值，就能删除当前这个组件中的数据
+      this.message.splice(this.delIndex, 1);
+      // 隐藏对话框
+      this.showModal = false;
     }
   },
   computed: {
