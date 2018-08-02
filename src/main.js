@@ -26,6 +26,8 @@ import axios from 'axios';
 Vue.prototype.axios = axios;
 // 定义默认的根地址，组件共用
 axios.defaults.baseURL = 'http://47.106.148.205:8899'
+// 让axios携带cookie
+axios.defaults.withCredentials=true;
 
 
 // 引入CSS
@@ -67,7 +69,11 @@ let buyList = JSON.parse(window.localStorage.getItem('buyList'))
 const store = new Vuex.Store({
   state: {
     // 因为要添加到购物车的商品不止一种，所以需要修改vuex仓库结构
-    buyList
+    buyList,
+    // 是否登录字段
+    isLogin:false,
+    // 过来时的地址
+    fromPath:'/'
   },
   // 显示总数到购物车标签上
   // 有一个类似于computed的属性
@@ -107,7 +113,16 @@ const store = new Vuex.Store({
     // 删除某一条数据
     delGood(state,id){
       Vue.delete(state.buyList,id)
+    },
+    // 判断是否登录
+    ChangeLogin(state,login){
+      state.isLogin = login
+    },
+    // 保存过来时的地址
+    saveFromPath(state,fromPath){
+      state.fromPath = fromPath
     }
+
   }
 })
 
@@ -129,7 +144,8 @@ const router = new VueRouter({
       component:buyCar
     },
     {
-      path:'/payOrder',
+      // 需要带id过去
+      path:'/payOrder/:ids',
       component:payOrder
     },
     {
@@ -139,8 +155,37 @@ const router = new VueRouter({
  ]
 })
 
+// 导航守卫
+router.beforeEach((to, from, next) => {
+  // 保存过来时的地址
+  store.commit('saveFromPath',from.path)
+  // 去结算页的都加规则ServerResponse
+  if(to.path=='/payOrder'){
+    axios.get('/site/account/islogin')
+        .then(response=>{
+            // console.log(response);
+            // 没登录就去登录页
+            if (response.data.code=='nologin') {
+                next('/login')
+            }else{
+              // 有登录就进行下一步
+              // store.commit('ChangeLogin',true)
+              // store.state.isLogin = true
+              next()
+            }
+        })
+        .catch(err=>{
+            console.log(err);
+        })
+  }else{
+    next()
+  }
+})
+
+
 // 引入CSS
 import './assets/statics/site/css/style.css'
+import { ServerResponse } from 'http';
 
 Vue.config.productionTip = false
 

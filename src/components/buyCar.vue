@@ -105,9 +105,8 @@
                     <div class="cart-foot clearfix">
                         <div class="right-box">
                             <button class="button" onclick="javascript:location.href='/index.html';">继续购物</button>
-                            <router-link to="/payOrder">
-                                <button class="submit">立即结算</button>
-                            </router-link>
+                            <!-- 改变跳转方式，携带已选择的商品id -->
+                            <button class="submit" @click="toPayOrder">立即结算</button>
                         </div>
                     </div>
                     <!--购物车底部-->
@@ -215,7 +214,31 @@ export default {
       this.message.splice(this.delIndex, 1);
       // 隐藏对话框
       this.showModal = false;
+    },
+    // 带id去支付页
+    toPayOrder(){
+        // console.log(this.message);
+        let ids = ''
+        // 获取id
+        this.message.forEach(v=>{
+            // console.log(v.id);
+            if(v.isSelected){
+                ids+=v.id;
+                ids+=','
+            }
+        })
+        if (ids=='') {
+            this.$message({
+                message:'哥们,你起码选一个呀!!',
+                duration:1000
+            });
+            return;
+        }
+        // console.log(ids);
+        ids = ids.slice(0,-1)
+        this.$router.push('/payOrder/'+ids);
     }
+
   },
   computed: {
     // 选中的商品数量

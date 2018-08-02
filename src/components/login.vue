@@ -51,9 +51,18 @@ export default {
             })
             .then(response=>{
                 console.log(response);
+                if (response.data.status==0) {
+                    // 登录成功 提示用户登陆成功
+                    this.$Message.success("登录成功")
+                    // 调用vuex的方法改变登录状态
+                    this.$store.commit('ChangeLogin',true);
+                    // 从哪来回哪去
+                    this.$router.push(this.$store.state.fromPath);
+                }
             })
             .catch(err=>{
                 console.log(err);
+                this.$Message.error("登录成功");
             })
         }
     }

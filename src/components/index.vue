@@ -55,7 +55,8 @@
                                     <img :src="item.img_url">
                                 </div>
                                 <div class="txt-box">
-                                    <a href="/goods/show-98.html">{{item.title}}</a>
+                                    <!-- <a href="/goods/show-98.html">{{item.title}}</a> -->
+                                    <router-link :to="`/goodsInfo/`+item.id">{{item.title}}</router-link>
                                     <span>{{item.add_time | cutTime}}</span>
                                 </div>
                             </li>

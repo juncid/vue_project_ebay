@@ -6,21 +6,21 @@
         <div class="head-top">
             <div class="section">
                 <div class="left-box">
-                    <span>黑马买买买</span>
+                    <span>My_eBuy</span>
                     <a target="_blank" href="#"></a>
                     <a target="_blank" href="#"></a>
                 </div>
                 <div id="menu" class="right-box">
-                    <span style="display: none;">
-                        <a href="" class="">登录</a>
+                    <span v-if="!$store.state.isLogin">
+                        <router-link to="/login">登录</router-link>
                         <strong>|</strong>
                         <a href="" class="">注册</a>
                         <strong>|</strong>
                     </span>
-                    <span>
+                    <span v-if="$store.state.isLogin">
                         <a href="" class="">会员中心</a>
                         <strong>|</strong>
-                        <a>退出</a>
+                        <a @click="loginOut">退出</a>
                         <strong>|</strong>
                     </span>
                     <router-link to="/buyCar">
@@ -152,6 +152,24 @@ export default {
           .animate({ top: "-48px" }, 300); // move up - hide
       }
     );
+  },
+  methods:{
+      loginOut(){
+          this.axios.get("/site/account/logout")
+          .then(response=>{
+            //   console.log(response);
+            if(response.data.status==0){
+                this.$Message.success(response.data.message);
+                // 跳页面
+                this.$router.push('/');
+                // 修改vuex中的值
+                this.$store.commit('ChangeLogin',false);
+            }
+          })
+          .catch(err=>{
+
+          })
+      }
   }
 };
 </script>
