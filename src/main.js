@@ -50,6 +50,7 @@ import goodInfo from './components/goodsInfo.vue'
 import buyCar from './components/buyCar.vue'
 import payOrder from './components/payOrder.vue'
 import login from './components/login.vue'
+import orderInfo from './components/orderInfo.vue'
 
 // 使用路由中间件
 Vue.use(VueRouter)
@@ -148,9 +149,15 @@ const router = new VueRouter({
       path:'/payOrder/:ids',
       component:payOrder
     },
+    // 登录页
     {
       path:'/login',
       component:login
+    },
+    // 订单详情页
+    {
+      path:'/orderInfo/:orderid',
+      component:orderInfo
     }
  ]
 })
@@ -160,7 +167,8 @@ router.beforeEach((to, from, next) => {
   // 保存过来时的地址
   store.commit('saveFromPath',from.path)
   // 去结算页的都加规则ServerResponse
-  if(to.path=='/payOrder'){
+  // 因为会带id过去，所以需要判断
+  if(to.path.indexOf('/payOrder')!=-1){
     axios.get('/site/account/islogin')
         .then(response=>{
             // console.log(response);
