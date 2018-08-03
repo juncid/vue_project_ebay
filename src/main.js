@@ -19,9 +19,14 @@ import VueLazyload from 'vue-lazyload'
 
 
 // 注册全局过滤器
-Vue.filter('cutTime', function (value) {
-    return moment(value).format('YYYY-MM-DD')
-})
+Vue.filter('cutTime', function (value,myrule) {
+    if(myrule){
+        return moment(value).format(myrule)
+    }else{
+      return moment(value).format('YYYY-MM-DD')
+
+    }
+  })
 
 // 抽取公共模块
 // 引入ajax模块
@@ -53,7 +58,8 @@ import login from './components/login.vue'
 import orderInfo from './components/orderInfo.vue'
 import paySuccess from './components/paySuccess.vue'
 import vipCenter from './components/vipCenter.vue'
-
+import orderList from './components/orderList.vue'
+import viewOrder from './components/viewOrder.vue'
 
 // 使用路由中间件
 Vue.use(VueRouter)
@@ -177,6 +183,18 @@ const router = new VueRouter({
       component:vipCenter,
       meta: { checkLogin: true }
     },
+    // 订单列表页
+    {
+      path:'/orderList',
+      component:orderList,
+      meta: { checkLogin: true }
+    },
+    // 查看订单页
+    {
+      path:'/viewOrder/:orderid',
+      component:viewOrder,
+      meta: { checkLogin: true }
+    },
  ]
 })
 
@@ -220,7 +238,20 @@ new Vue({
   // 挂载路由
   router,
   // 挂载vuex仓库
-  store
+  store,
+  beforeCreate() {
+    // console.log('app-beforeCreate');
+    axios
+      .get("/site/account/islogin")
+      .then(response => {
+        // console.log(response);
+        // if(response.data.code=='logined')
+        store.state.isLogin = response.data.code == "logined";
+      })
+      .catch(err => {
+        // console.log(err);
+      });
+  },
 }).$mount('#app')
 
 // 数据常驻  关闭或刷新浏览器保存数据在本地

@@ -112,7 +112,7 @@ export default {
             // console.log(1);
             this.axios.get(`site/validate/order/getorder/${this.$route.params.orderid}`)
             .then(response=>{
-                console.log(response);
+                // console.log(response);
                 if (response.data.message[0].status==2) {
                     this.$Message.success('支付成功')
                     // 跳转页面

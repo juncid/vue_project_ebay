@@ -1,5 +1,5 @@
 <template>
-    <div class="el-row">
+    <div class="el-row" v-if="orderList.lenght!=0">
         <div class="el-col el-col-24">
             <div class="comp">
                 <div class="tmpl routeanimate">
@@ -34,8 +34,8 @@
                                             </h2>
                                             <div class="list">
                                                 <p>
-                                                    <a href="#/site/member/orderlist" class="router-link-exact-active ">
-                                                        <i class="iconfont icon-arrow-right"></i>交易订单</a>
+                                                    <!-- <a href="#/site/member/orderlist" class="router-link-exact-active "> -->
+                                                        <router-link to="/orderList"><i class="iconfont icon-arrow-right"></i>交易订单</router-link>
                                                 </p>
                                             </div>
                                         </li>
@@ -77,6 +77,17 @@
                                     </ul>
                                 </div>
                                 <div class="table-wrap">
+                                    <div class="block">
+                                        <el-pagination
+                                        @size-change="sizeChange"
+                                        @current-change="currentChange"
+                                        :current-page="pageIndex"
+                                        :page-sizes="[5, 10, 15, 20]"
+                                        :page-size="100"
+                                        layout="total, sizes, prev, pager, next, jumper"
+                                        :total="totalcount">
+                                        </el-pagination>
+                                    </div>
                                     <table width="100%" border="0" cellspacing="0" cellpadding="0" class="ftable">
                                         <tbody>
                                             <tr>
@@ -87,21 +98,22 @@
                                                 <th width="10%">状态</th>
                                                 <th width="12%">操作</th>
                                             </tr>
-                                            <tr>
-                                                <td>BD20171025213815752</td>
-                                                <td align="left">ivanyb1212</td>
+                                            <tr v-for="(item, index) in orderList" :key="item.id">
+                                                <td>{{item.order_no}}</td>
+                                                <td align="left">{{item.accept_name}}</td>
                                                 <td align="left">
-                                                    <strong style="color: red;">￥7220</strong>
+                                                    <strong style="color: red;">￥{{item.order_amount}}</strong>
                                                     <br> 在线支付
                                                 </td>
-                                                <td align="left">2017-10-25 21:38:15</td>
+                                                <td align="left">{{item.confirm_time | cutTime('YYYY-MM-DD hh:mm:ss')}}</td>
                                                 <td align="left">
-                                                    待付款
+                                                    {{item.statusName}}
                                                 </td>
                                                 <td align="left">
-                                                    <a href="#/site/member/orderinfo/12" class="">查看订单</a>
+                                                    <!-- <a href="#/site/member/orderinfo/12" class="">查看订单</a> -->
+                                                    <router-link :to="'/viewOrder/'+item.id">查看订单</router-link>
                                                     <br>
-                                                    <a href="#/site/goods/payment/12" class="">|去付款</a>
+                                                        <router-link v-if="item.status==1" :to="'/orderinfo/'+item.id">|去付款</router-link>
                                                     <br>
                                                     <a href="javascript:void(0)">|取消</a>
                                                     <br>
@@ -122,7 +134,53 @@
     </div>
 </template>
 <script>
-export default {};
+export default {
+  data: function() {
+    return {
+      pageIndex: 1,
+      pageSize: 10,
+      orderList: [],
+      totalcount: 0,
+    };
+  },
+  methods: {
+    // 封装axios
+    getOrderList() {
+      this.axios
+        .get(
+          `site/validate/order/userorderlist?pageIndex=${
+            this.pageIndex
+          }&pageSize=${this.pageSize}`
+        )
+        .then(response => {
+          console.log(response);
+          this.orderList = response.data.message;
+          this.totalcount = response.data.totalcount;
+        })
+        .catch(error => {});
+    },
+    sizeChange(value) {
+    //   console.log(value);
+      this.pageSize = value
+      this.getOrderList()
+    },
+    currentChange(value) {
+    //   console.log(value);
+      this.pageIndex = value
+      this.getOrderList();
+    }
+  },
+  created() {
+    // 吊接口，获取订单数据
+    this.getOrderList()
+  }
+};
 </script>
 <style scoped>
+.avatar-box {
+  height: 80px;
+}
+.sub-tit {
+  padding-top: 0;
+}
 </style>
