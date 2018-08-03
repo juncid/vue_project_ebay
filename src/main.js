@@ -12,6 +12,10 @@ import 'iview/dist/styles/iview.css';
 import moment from 'moment';
 // 引入vuex
 import Vuex from 'vuex'
+// 引入CSS
+import 'element-ui/lib/theme-chalk/index.css';
+// 引入懒加载模块
+import VueLazyload from 'vue-lazyload'
 
 
 // 注册全局过滤器
@@ -30,10 +34,6 @@ axios.defaults.baseURL = 'http://47.106.148.205:8899'
 axios.defaults.withCredentials=true;
 
 
-// 引入CSS
-import 'element-ui/lib/theme-chalk/index.css';
-// 引入懒加载模块
-import VueLazyload from 'vue-lazyload'
 
 // 使用懒加载路由
 Vue.use(VueLazyload,{
@@ -51,6 +51,9 @@ import buyCar from './components/buyCar.vue'
 import payOrder from './components/payOrder.vue'
 import login from './components/login.vue'
 import orderInfo from './components/orderInfo.vue'
+import paySuccess from './components/paySuccess.vue'
+import vipCenter from './components/vipCenter.vue'
+
 
 // 使用路由中间件
 Vue.use(VueRouter)
@@ -161,7 +164,19 @@ const router = new VueRouter({
       path:'/orderInfo/:orderid',
       component:orderInfo,
       meta: { checkLogin: true }
-    }
+    },
+    //支付完成组件
+    {
+      path:'/paySuccess',
+      component:paySuccess,
+      meta: { checkLogin: true }
+    },
+    // 会员中心组件
+    {
+      path:'/vipCenter',
+      component:vipCenter,
+      meta: { checkLogin: true }
+    },
  ]
 })
 

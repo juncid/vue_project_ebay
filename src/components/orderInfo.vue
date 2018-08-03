@@ -70,9 +70,7 @@
                                 </div>
                             </div>
                             <div class="el-col el-col-6">
-                                <div id="container2">
-                                    <canvas width="300" height="300"></canvas>
-                                </div>
+                                <VueQrcode v-if="codeUrl" :value="codeUrl" :options="{ size: 200 }"></VueQrcode>
                             </div>
                         </div>
                     </div>
@@ -82,14 +80,20 @@
     </div>
 </template>
 <script>
+import VueQrcode from '@xkeshi/vue-qrcode';
+
 export default {
     name:'orderInfo',
     data:function () {  
         return{
-            message:[]
+            message:[],
+            codeUrl:``
         }
     },
-    beforeCreate() {
+    components:{
+        VueQrcode
+    },
+    created() {
          // console.log(this.$route.params.orderid);
         this.axios.get(`site/validate/order/getorder/${this.$route.params.orderid}`)
         .then(response=>{
@@ -102,6 +106,25 @@ export default {
         .catch(error=>{
             console.log(error);
         }) 
+        this.codeUrl = `http://47.106.148.205:8899/site/validate/pay/alipay/${this.$route.params.orderid}`
+        // 轮询接口，判断是否支付成功
+        let timeid = setInterval(()=>{
+            // console.log(1);
+            this.axios.get(`site/validate/order/getorder/${this.$route.params.orderid}`)
+            .then(response=>{
+                console.log(response);
+                if (response.data.message[0].status==2) {
+                    this.$Message.success('支付成功')
+                    // 跳转页面
+                    this.$router.push('/paySuccess')
+                    // 清空计时器
+                    clearInterval(timeid)
+                }
+            })
+            .catch(error=>{
+                console.log(error);
+            })
+        },2000)
     }
 };
 </script>
