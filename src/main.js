@@ -147,7 +147,9 @@ const router = new VueRouter({
     {
       // 需要带id过去
       path:'/payOrder/:ids',
-      component:payOrder
+      component:payOrder,
+      // 路由元信息
+      meta: { checkLogin: true }
     },
     // 登录页
     {
@@ -157,7 +159,8 @@ const router = new VueRouter({
     // 订单详情页
     {
       path:'/orderInfo/:orderid',
-      component:orderInfo
+      component:orderInfo,
+      meta: { checkLogin: true }
     }
  ]
 })
@@ -167,8 +170,8 @@ router.beforeEach((to, from, next) => {
   // 保存过来时的地址
   store.commit('saveFromPath',from.path)
   // 去结算页的都加规则ServerResponse
-  // 因为会带id过去，所以需要判断
-  if(to.path.indexOf('/payOrder')!=-1){
+  // 导航守卫中判断是否有元信息checkLogin， 有才进行判断
+  if(to.meta.checkLogin){
     axios.get('/site/account/islogin')
         .then(response=>{
             // console.log(response);

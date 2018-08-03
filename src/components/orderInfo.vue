@@ -8,7 +8,7 @@
             </div>
         </div>
 
-        <div class="section">
+        <div class="section" v-if="message.length!=0">
             <div class="wrapper">
                 <div class="bg-wrap">
                     <div class="nav-tit pay">
@@ -35,7 +35,7 @@
                                     <div class="el-col el-col-12">
                                         <dl class="form-group">
                                             <dt>送货地址：</dt>
-                                            <dd>{{message[0].area}}
+                                            <dd>{{message[0].area}}{{message[0].address}}
                                             </dd>
                                         </dl>
                                     </div>
@@ -94,8 +94,10 @@ export default {
         this.axios.get(`site/validate/order/getorder/${this.$route.params.orderid}`)
         .then(response=>{
             // console.log(response.data.message);
-            this.message = response.data.message
-             console.log(this.message);
+            
+
+                this.message = response.data.message
+            //  console.log(this.message);
         })
         .catch(error=>{
             console.log(error);
